@@ -136,17 +136,16 @@ export default {
 
       try {
         await this.createUser(values)
+        console.log('nothing!!!', values)
+
+        this.reg_alert_msg = 'Success ! Your account has been created.'
+        this.reg_alert_variant = 'bg-green-500'
       } catch (error) {
         this.reg_in_submission = false
         this.reg_alert_variant = 'bg-red-500'
         this.reg_alert_msg = 'An unexpected error occurred.Pleas try again later'
         return
       }
-
-      setTimeout(() => {
-        this.reg_alert_msg = 'Success ! Your account has been created.'
-        this.reg_alert_variant = 'bg-green-500'
-      }, 2000)
 
       console.log(values)
     }
