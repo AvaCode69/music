@@ -60,7 +60,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useUserStore, ['authenticate']),
+    ...mapActions(useUserStore, { userAuthenticate: 'authenticate' }),
 
     async login(values) {
       this.login_in_submission = true
@@ -69,7 +69,7 @@ export default {
       this.login_alert_msg = 'Please wait ! We are logging you in.'
 
       try {
-        await this.authenticate(values)
+        await this.userAuthenticate(values)
       } catch (error) {
         this.login_in_submission = false
         this.login_alert_variant = 'bg-red-500'
