@@ -4,14 +4,17 @@ import About from '../views/About.vue'
 import Manage from '../views/Manage.vue'
 const routes = [
   {
+    name: 'home',
     path: '/',
     component: Home
   },
   {
+    name: 'about',
     path: '/about',
     component: About
   },
   {
+    name: 'manage',
     path: '/manage',
     component: Manage
   }
