@@ -137,9 +137,6 @@ export default {
       try {
         await this.createUser(values)
         console.log('nothing!!!', values)
-
-        this.reg_alert_msg = 'Success ! Your account has been created.'
-        this.reg_alert_variant = 'bg-green-500'
       } catch (error) {
         this.reg_in_submission = false
         this.reg_alert_variant = 'bg-red-500'
@@ -147,7 +144,10 @@ export default {
         return
       }
 
-      console.log(values)
+      this.reg_alert_msg = 'Success ! Your account has been created.'
+      this.reg_alert_variant = 'bg-green-500'
+
+      window.location.reload()
     }
   }
 }
