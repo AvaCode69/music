@@ -62,13 +62,11 @@ export default {
       const files = [...$event.dataTransfer.files]
       console.log(files)
 
-      const storageRef = ref(storage)
-
       files.forEach(async (file) => {
         if (file.type !== 'audio/mpeg') {
           return
         }
-
+        const storageRef = ref(storage)
         const songsRef = ref(storageRef, `songs/${file.name}`)
         await uploadBytes(songsRef, file)
       })
