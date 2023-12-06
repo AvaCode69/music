@@ -15,7 +15,7 @@
         @dragover.prevent.stop="is_dragover = true"
         @dragenter.prevent.stop="is_dragover = true"
         @dragleave.prevent.stop="is_dragover = false"
-        @drop.prevent.stop="upload"
+        @drop.prevent.stop="upload($event)"
       >
         <h5>Drop your files here</h5>
       </div>
@@ -46,6 +46,9 @@
 </template>
 
 <script>
+import { storage } from '../includes/firebase'
+import { ref, uploadBytes } from 'firebase/storage'
+
 export default {
   name: 'Upload',
   data() {
@@ -54,8 +57,21 @@ export default {
     }
   },
   methods: {
-    upload() {
+    async upload($event) {
       this.is_dragover = false
+      const files = [...$event.dataTransfer.files]
+      console.log(files)
+
+      const storageRef = ref(storage)
+
+      files.forEach(async (file) => {
+        if (file.type !== 'audio/mpeg') {
+          return
+        }
+
+        const songsRef = ref(storageRef, `songs/${file.name}`)
+        await uploadBytes(songsRef, file)
+      })
     }
   }
 }
