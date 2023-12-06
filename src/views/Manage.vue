@@ -137,11 +137,12 @@
 </template>
 
 <script>
-import useUserStore from '../stores/user'
+// import useUserStore from '../stores/user'
 
 export default {
-  name: '',
-  beforeRouteEnter(to, from, next) {
+  name: 'manage'
+  /*
+ beforeRouteEnter(to, from, next) {
     const store = useUserStore()
     if (store.userLoggedIn) {
       next()
@@ -149,5 +150,7 @@ export default {
       next({ name: 'home' })
     }
   }
+
+ */
 }
 </script>
