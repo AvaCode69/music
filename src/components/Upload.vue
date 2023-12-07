@@ -75,14 +75,27 @@ export default {
             text_class: ''
           }) - 1
 
-        task.on('state_changed', (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          this.uploads[uploadIndex].current_progress = progress
-          console.log(
-            ' this.uploads[uploadIndex].current_progress',
-            this.uploads[uploadIndex].current_progress
-          )
-        })
+        task.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            this.uploads[uploadIndex].current_progress = progress
+            console.log(
+              ' this.uploads[uploadIndex].current_progress',
+              this.uploads[uploadIndex].current_progress
+            )
+          },
+          (error) => {
+            this.uploads[uploadIndex].variant = 'bg-red-400'
+            this.uploads[uploadIndex].icon = 'fas fa-items'
+            this.uploads[uploadIndex].text_class = 'text-red-400'
+          },
+          () => {
+            this.uploads[uploadIndex].variant = 'bg-green-400'
+            this.uploads[uploadIndex].icon = 'fas fa-check'
+            this.uploads[uploadIndex].text_class = 'text-green-400'
+          }
+        )
       })
     }
   }
