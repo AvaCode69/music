@@ -41,7 +41,7 @@
 
 <script>
 import { storage } from '../includes/firebase'
-import { ref, uploadBytes, uploadBytesResumable } from 'firebase/storage'
+import { ref, uploadBytesResumable } from 'firebase/storage'
 
 export default {
   name: 'Upload',
@@ -61,9 +61,10 @@ export default {
         if (file.type !== 'audio/mpeg') {
           return
         }
+
         const storageRef = ref(storage)
         const songsRef = ref(storageRef, `songs/${file.name}`)
-        const task = await uploadBytesResumable(songsRef, file)
+        const task = uploadBytesResumable(songsRef, file)
 
         const uploadIndex =
           this.uploads.push({
@@ -75,28 +76,31 @@ export default {
             text_class: ''
           }) - 1
 
-        task.on(
-          'state_changed',
-          (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            this.uploads[uploadIndex].current_progress = progress
-            console.log(
-              ' this.uploads[uploadIndex].current_progress',
-              this.uploads[uploadIndex].current_progress
-            )
-          },
-          (error) => {
-            this.uploads[uploadIndex].variant = 'bg-red-400'
-            this.uploads[uploadIndex].icon = 'fas fa-items'
-            this.uploads[uploadIndex].text_class = 'text-red-400'
-          },
-          () => {
-            this.uploads[uploadIndex].variant = 'bg-green-400'
-            this.uploads[uploadIndex].icon = 'fas fa-check'
-            this.uploads[uploadIndex].text_class = 'text-green-400'
-          }
-        )
+        this.setupProgressListener(this.uploads[uploadIndex].task, uploadIndex)
       })
+    },
+    setupProgressListener(task, uploadIndex) {
+      task.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          this.uploads[uploadIndex].current_progress = progress
+          console.log(
+            'this.uploads[uploadIndex].current_progress',
+            this.uploads[uploadIndex].current_progress
+          )
+        },
+        (error) => {
+          this.uploads[uploadIndex].variant = 'bg-red-400'
+          this.uploads[uploadIndex].icon = 'fas fa-items'
+          this.uploads[uploadIndex].text_class = 'text-red-400'
+        },
+        () => {
+          this.uploads[uploadIndex].variant = 'bg-green-400'
+          this.uploads[uploadIndex].icon = 'fas fa-check'
+          this.uploads[uploadIndex].text_class = 'text-green-400'
+        }
+      )
     }
   }
 }
