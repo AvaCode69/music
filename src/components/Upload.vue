@@ -21,24 +21,18 @@
       </div>
       <hr class="my-6" />
       <!-- Progess Bars -->
-      <div class="mb-4">
+      <div class="mb-4" v-for="upload in uploads" :key="upload.name">
         <!-- File Name -->
-        <div class="font-bold text-sm">Just another song.mp3</div>
+        <div class="font-bold text-sm" :class="text_class">
+          <i :class="upload.icon"></i>{{ upload.name }}
+        </div>
         <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
           <!-- Inner Progress Bar -->
-          <div class="transition-all progress-bar bg-blue-400" style="width: 75%"></div>
-        </div>
-      </div>
-      <div class="mb-4">
-        <div class="font-bold text-sm">Just another song.mp3</div>
-        <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
-          <div class="transition-all progress-bar bg-blue-400" style="width: 35%"></div>
-        </div>
-      </div>
-      <div class="mb-4">
-        <div class="font-bold text-sm">Just another song.mp3</div>
-        <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
-          <div class="transition-all progress-bar bg-blue-400" style="width: 55%"></div>
+          <div
+            class="transition-all progress-bar"
+            :class="upload.variant"
+            :style="{ width: upload.current_progress + '%' }"
+          ></div>
         </div>
       </div>
     </div>
@@ -47,13 +41,14 @@
 
 <script>
 import { storage } from '../includes/firebase'
-import { ref, uploadBytes } from 'firebase/storage'
+import { ref, uploadBytes, uploadBytesResumable } from 'firebase/storage'
 
 export default {
   name: 'Upload',
   data() {
     return {
-      is_dragover: false
+      is_dragover: false,
+      uploads: []
     }
   },
   methods: {
@@ -68,7 +63,26 @@ export default {
         }
         const storageRef = ref(storage)
         const songsRef = ref(storageRef, `songs/${file.name}`)
-        await uploadBytes(songsRef, file)
+        const task = await uploadBytesResumable(songsRef, file)
+
+        const uploadIndex =
+          this.uploads.push({
+            task,
+            current_progress: 0,
+            name: file.name,
+            variant: 'bg-blue-400',
+            icon: 'fas fa-spinner fa-spin',
+            text_class: ''
+          }) - 1
+
+        task.on('state_changed', (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          this.uploads[uploadIndex].current_progress = progress
+          console.log(
+            ' this.uploads[uploadIndex].current_progress',
+            this.uploads[uploadIndex].current_progress
+          )
+        })
       })
     }
   }
